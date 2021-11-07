@@ -275,6 +275,47 @@ function changeInfo() {
 
 
 
+// `recative` 函数 对不同数据类型的修改 
+
+```js
+  setup() { 
+    // 使用 reactive 函数 
+    let person = reactive({
+      name: 'Yellowsea',
+      age: 18,
+      type: '前端',
+      salary: '30k',
+
+      // 对象中的对象
+      a: {
+        b: {
+          c : 100
+        }
+      },
+      //数据类型 
+      arr: ['事件1', '事件2', '事件3'],
+    })
+    function changeInfo() {
+      // 使用 reactive 时, Proxy对象, 修改数据 , 不用像 ref修改对象时需要 xxx.value
+      person.type = 'UI工程师',
+      person.salary ='14k' 
+      person.name = 'Yellowsea',
+      person.age = 123,
+      person.a.b.c = 200,   // 修改更深层的数据 
+      person.arr[0] = '学习'   // 修改数组
+    }
+    return {   
+      person,
+      changeInfo,
+    }
+```
+
+
+
+
+
+
+
 
 
 
