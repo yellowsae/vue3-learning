@@ -234,6 +234,70 @@ function changeInfo() {
 
 
 
+### reactive 函数
+
+将数据变为响应式的数据 
+
+引入 ： `import {ref, reactive} from 'vue'`
+
+//查看 `reactive` 函数返回的数据类型
+
+```js
+// 使用 reactive 函数 
+let obj = reactive({
+    type: '前端',
+    salary: '30k'
+})
+function changeInfo() {
+    console.log(obj)
+}
+```
+
+
+
+<img src="https://gitee.com/yunhai0644/imghub/raw/master/20211107210103.png" alt="image-20211107210057619" style="zoom:67%;" />
+
+//使用 `reactive` 函数  Proxy类型修改数据 
+
+```js
+// 使用 reactive 函数 
+let obj = reactive({
+    type: '前端',
+    salary: '30k'
+})
+function changeInfo() {
+    // 使用 reactive 时, Proxy对象, 修改数据 , 不用像 ref修改对象时需要 xxx.value
+    obj.type = 'UI工程师',
+        obj.salary ='14k' 
+    // console.log(obj)  // 查看reactive函数的类型
+}
+```
+
+
+
+
+
+
+
+// `reactive` 函数总结 
+
+1. 作用 ： 定义一个数据类型的响应式数据 （基本类型不要使用 `reactive` , 要用  `ref` 函数 ） 
+2. 语法： `const 代理对象  = reactive(元对象) ` 接收一个对象（或数组）， 返回一个**代理对象** （Proxy的实例对象， 简称 Proxy 对象） 
+3. `reactive` 定义的响应式数据是深层次的
+   1. 内部基于ES6的 Proxy 实现 ，通过代理的对象操作源对象内部数据进行操作
+
+
+
+
+
+
+
+
+
+
+
+### Vue3的响应式原理
+
 
 
 
