@@ -341,9 +341,185 @@ function changeInfo() {
 
 
 
+#### **复习Vue2的响应式**
+
+```js
+ data () {
+    return {
+      person: {
+        name: 'Yellowsea',
+        age : 18,
+        hobby: ['学习，吃饭'],
+      }
+    }
+  },
+  methods: {
+    addSex() {
+       // 直接添加是不行的 
+      // this.person.sex = '男' 
+      // 必须要使用Vue2提供得 this.$set() 
+      this.$set(this.person, 'sex', '男')   
+      // 或者使用 Vue.set() 方法 
+      Vue.set(this.person,'sex','女')
+    },
+
+    deleteSex() {
+      //直接删除 
+      // delete  this.person.sex   // 不能直接删除
+      // 使用 this.$delete() 删除  
+      this.$delete(this.person, 'sex')
+      //使用Vue.delete() 删除  
+      Vue.delete(this.person,'sex')
+    },
+  }
+```
+
+<img src="https://gitee.com/yunhai0644/imghub/raw/master/20211108110728.png" alt="image-20211108110716226" style="zoom:67%;" />
+
+// vue2实现响应式原理
+
+```js
+// 源数据
+let person = {
+    name: 'yellowsea',
+    age: 18,
+};
+// 模拟vue2 中实现响应式    
+let p = {};
+Object.defineProperty(p, 'name', {
+    get() {
+        return person.name
+    },
+    set(value) {
+        console.log('有人修改了name属性 修改的值为 : ' + value)
+        person.name = value;
+    }
+})
+
+Object.defineProperty(p, 'age', {
+    get() {
+        // 有人读取了 age 属性时调用
+        return person.age
+    },
+    set(value) {
+        person.age = value;
+    }
+})
+```
+
+
+
+
+
+#### Vue3响应式原理
+
+// 数据体现
+
+```js
+  setup() { 
+    // 使用 reactive 函数 
+    let person = reactive({
+      name: 'Yellowsea',
+      age: 18,
+      type: '前端',
+      salary: '30k',
+      // 对象中的对象
+      a: {
+        b: {
+          c : 100
+        }
+      },
+      //数据类型 
+      arr: ['事件1', '事件2', '事件3'],
+    })
+    function changeInfo() {
+      // 使用 reactive 时, Proxy对象, 修改数据 , 不用像 ref修改对象时需要 xxx.value
+      person.type = 'UI工程师',
+      person.salary ='14k' 
+      person.name = 'Yellowsea',
+      person.age = 123,
+      person.a.b.c = 200,   // 修改更深层的数据 
+      person.arr[0] = '学习'   // Vue3中借助数组下标修改 数组元素 
+    }
+
+    // 验证 Vue3的响应式底层原理 
+    function addSex() {
+      // 它是直接添加了 sex 这个属性 ，
+      // 并没有借助 this.$set  或 Vue.set() 方法 
+      person.sex  = '男'   // 添加属性 
+      console.log(person)
+    }
+    function deleteName() {
+      // 删除属性也是一样，没有借助 this.$delete() 或者 Vue.delete() 
+      delete person.name
+    }
+    return {   
+      person,
+      changeInfo,
+      addSex,
+      deleteName
+    }
+```
+
+// 查看 person 的实例   `Proxy` **代理对象** 
+
+<img src="https://gitee.com/yunhai0644/imghub/raw/master/20211108113312.png" alt="image-20211108113307329" style="zoom:67%;" />
+
+> vue2和vue3的响应式原理相比， vue2使用了Object.definePropertry() 的 get/ set 方法监视数据的变化，再进行对数据的操作，而在vue3中使用了 window下的`Proxy` 代理对象对数据进行监视，再对数据进行操作 
+
+
+
+// vue3源码实现 
+
+```js
+```
+
+
+
+  
 
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+#### 总结Vue3和vue2响应式原理
+
+
+
+**Vue2响应式原理**
+
+- 实现原理 ： 通过 `Object.defineProperty()` 对属性的读取、修改进行操作（数据劫持） 
+- 数组类型 ： 通过重写更新数组的一系列方法来实现拦截 （对数组的变更方法进行了包裹`push`等方法）
+
+```js
+// Vue响应式原理 
+Object.defineProperty(data,'count', {
+    get() {}
+    set() {}
+})
+```
+
+
+
+- Vue2存在的问题 ： 
+  - 新增属性、删除属性、页面不会更新
+  - 直接通过下标修改数组， 页面也不会更新 
+
+**Vue3响应式原理**
+
+-  实现原理 
+  - 通过`Proxy`(代理) ：  拦截对象中任意属性的变化，包括 ： 属性值的读写，属性的添加， 属性的删除等
+  - 通过 `Reflect`(反射) ： 对被代理对象的属性进行操作 
+  - MDN文档中对 `Proxy` 和 `Reflect` 的描述 
+    - https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy
+    - https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Reflect

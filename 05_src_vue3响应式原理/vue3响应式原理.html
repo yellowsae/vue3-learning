@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue3响应式原理</title>
+</head>
+
+<body>
+    <script>
+        // 源数据
+        let person = {
+            name: 'yellowsea',
+            age: 18,
+        };
+        // 模拟vue2 中实现响应式    
+        let p = {};
+        Object.defineProperty(p, 'name', {
+            get() {
+                return person.name
+            },
+            set(value) {
+                console.log('有人修改了name属性 修改的值为 : ' + value)
+                person.name = value;
+            }
+        })
+
+        Object.defineProperty(p, 'age', {
+            get() {
+                // 有人读取了 age 属性时调用
+                return person.age
+            },
+            set(value) {
+                person.age = value;
+            }
+        })
+    </script>
+</body>
+
+</html>
