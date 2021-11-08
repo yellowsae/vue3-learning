@@ -472,13 +472,127 @@ Object.defineProperty(p, 'age', {
 // vue3源码实现 
 
 ```js
+// 源数据
+let person = {
+    name: 'yellowsea',
+    age: 18,
+};
+
+// 模拟vue3 中的响应式
+// window.Proxy 借助window下的数据代理
+
+const p = new Proxy(person, {
+    // 定义 Proxy对象，传入两个参数，一个是原对象，一个操作数据的对象
+})
 ```
 
+**p和 person的数据类型**   
+
+<img src="https://gitee.com/yunhai0644/imghub/raw/master/20211108160321.png" alt="image-20211108160316346" style="zoom:70%;" />
+
+  // 在 `Proxy` **代理对象**中操作数据 
+
+```js
+const p = new Proxy(person, { 
+    // 定义 Proxy对象，传入两个参数，一个是原对象，一个操作数据的对象
+
+    // 读取对象的方法 
+    get(target, propName) {
+        // 接收到两个参数 ： 
+        // target 原对象 person ， propName: 修改的属性值，
+        console.log(`有人读取了p身上的 ${propName} 属性`)
+        return target[propName] // 返回读取的属性
+    },
+    // set() 修改对象中的属性
+    set(target, propName, value) {
+        // 接收到三个参数 ： 
+        // target 原对象 ， propName: 修改的属性值， value ： 修改后的值 
+        console.log(`有人修改了p身上的 ${propName}属性 值为 ： ${value} `)
+        return target[propName] = value // 修改数据 
+    }
+})
+```
+
+// get() 和 set()  只是在`Proxy`中的读取和修改数据操作， 进行响应式 
+
+<img src="https://gitee.com/yunhai0644/imghub/raw/master/20211108160849.png" alt="image-20211108160842380" style="zoom:67%;" />
 
 
-  
+
+//  
+
+```js
+const p = new Proxy(person, { // 定义 Proxy对象，传入两个参数，一个是原对象，一个操作数据的对象
+
+    // 读取对象的方法 
+    get(target, propName) {
+        // 接收到两个参数 ： 
+        // target 原对象 person ， propName: 修改的属性值，
+        console.log(`有人读取了p身上的 ${propName} 属性`)
+        return target[propName] // 返回读取的属性
+    },
+
+    // set() 修改对象中的属性
+    // set() 也能添加属性 
+    set(target, propName, value) {
+        // 接收到三个参数 ： 
+        // target 原对象 ， propName: 修改的属性值， value ： 修改后的值 
+        console.log(`有人修改了p身上的 ${propName}属性 值为 ： ${value} `)
+        return target[propName] = value // 修改数据 
+    },
+
+    // delete  删除数据时候调用
+    deleteProperty(target, propName) {
+        // 接收到的参数和上边方法一样
+        console.log(`有人删除了 p身上的 ${propName} 属性, 我要去修改页面了 `)
+        return delete target[propName]
+        // deleteProperty 布尔值， 直接把删除后的返回值 返回就行
+    }
+})
+```
+
+// 删除和添加熟悉操作 
+
+<img src="https://gitee.com/yunhai0644/imghub/raw/master/20211108161917.png" alt="image-20211108161841954" style="zoom:67%;" />
 
 
+
+**认识Reflect**
+
+Reflect是 **反射对象**
+
+在Vue3响应式原理中 `Proxy` 使用到了 `Reflect` 方法 
+
+```js
+            // 读取对象的方法 
+            get(target, propName) {
+                // 接收到两个参数 ： 
+                // target 原对象 person ， propName: 修改的属性值，
+                console.log(`有人读取了p身上的 ${propName} 属性`);
+                // return target[propName] // 返回读取的属性
+                // 使用 Reflect 对象属性操作 
+                return Reflect.get(target, propName)
+            },
+
+            // set() 修改对象中的属性
+            // set() 也能添加属性 
+            set(target, propName, value) {
+                // 接收到三个参数 ： 
+                // target 原对象 ， propName: 修改的属性值， value ： 修改后的值 
+                console.log(`有人修改了p身上的 ${propName}属性 值为 ： ${value} `);
+                // return target[propName] = value // 修改数据 
+                return Reflect.set(target, propName, value)
+            },
+
+            // delete  删除数据时候调用
+            deleteProperty(target, propName) {
+                // 接收到的参数和上边方法一样
+                console.log(`有人删除了 p身上的 ${propName} 属性, 我要去修改页面了 `);
+                // return delete target[propName]
+                // deleteProperty 布尔值， 直接把删除后的返回值 返回就行
+                return Reflect.deleteProperty(target, propName)
+            }
+```
 
 
 
@@ -519,7 +633,29 @@ Object.defineProperty(data,'count', {
 
 -  实现原理 
   - 通过`Proxy`(代理) ：  拦截对象中任意属性的变化，包括 ： 属性值的读写，属性的添加， 属性的删除等
+  
   - 通过 `Reflect`(反射) ： 对被代理对象的属性进行操作 
+  
   - MDN文档中对 `Proxy` 和 `Reflect` 的描述 
     - https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy
     - https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Reflect
+    
+    ```js
+    const p = new Proxy(person, { 
+        // 拦截读取对象的值 
+        get(target, propName) {
+            return Reflect.get(target, propName)
+        },
+        // 拦截设置属性值，或添加属性值 
+        set(target, propName, value) {
+            return Reflect.set(target, propName, value)
+        },
+        // 拦截删除属性
+        deleteProperty(target, propName) {
+            return Reflect.deleteProperty(target, propName)
+        }
+    })
+    ```
+    
+    
+

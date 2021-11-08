@@ -15,25 +15,62 @@
             name: 'yellowsea',
             age: 18,
         };
-        // 模拟vue2 中实现响应式    
-        let p = {};
-        Object.defineProperty(p, 'name', {
-            get() {
-                return person.name
-            },
-            set(value) {
-                console.log('有人修改了name属性 修改的值为 : ' + value)
-                person.name = value;
-            }
-        })
+        // 模拟vue2 中实现响应式  
+        //#region 
+        // let p = {};
+        // Object.defineProperty(p, 'name', {
+        //     get() {
+        //         return person.name
+        //     },
+        //     set(value) {
+        //         console.log('有人修改了name属性 修改的值为 : ' + value)
+        //         person.name = value;
+        //     }
+        // })
 
-        Object.defineProperty(p, 'age', {
-            get() {
-                // 有人读取了 age 属性时调用
-                return person.age
+        // Object.defineProperty(p, 'age', {
+        //     get() {
+        //         // 有人读取了 age 属性时调用
+        //         return person.age
+        //     },
+        //     set(value) {
+        //         person.age = value;
+        //     }
+        // })
+        //#endregion
+
+        // 模拟vue3 中的响应式
+        // window.Proxy 借助window下的数据代理
+
+        const p = new Proxy(person, { // 定义 Proxy对象，传入两个参数，一个是原对象，一个操作数据的对象
+
+            // 读取对象的方法 
+            get(target, propName) {
+                // 接收到两个参数 ： 
+                // target 原对象 person ， propName: 修改的属性值，
+                console.log(`有人读取了p身上的 ${propName} 属性`);
+                // return target[propName] // 返回读取的属性
+                // 使用 Reflect 对象属性操作 
+                return Reflect.get(target, propName)
             },
-            set(value) {
-                person.age = value;
+
+            // set() 修改对象中的属性
+            // set() 也能添加属性 
+            set(target, propName, value) {
+                // 接收到三个参数 ： 
+                // target 原对象 ， propName: 修改的属性值， value ： 修改后的值 
+                console.log(`有人修改了p身上的 ${propName}属性 值为 ： ${value} `);
+                // return target[propName] = value // 修改数据 
+                return Reflect.set(target, propName, value)
+            },
+
+            // delete  删除数据时候调用
+            deleteProperty(target, propName) {
+                // 接收到的参数和上边方法一样
+                console.log(`有人删除了 p身上的 ${propName} 属性, 我要去修改页面了 `);
+                // return delete target[propName]
+                // deleteProperty 布尔值， 直接把删除后的返回值 返回就行
+                return Reflect.deleteProperty(target, propName)
             }
         })
     </script>
