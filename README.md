@@ -776,6 +776,168 @@ Object.defineProperty(data,'count', {
 
 
 
+### Vue3中的计算属性 
+
+与 vue2 的 computed 配置功能基本一致 
+
+写法： 
+
+```js
+// 需要引入 computed 
+    import {reactive,computed} from 'vue'
+
+	setup() {   
+            let person = reactive({
+                firstName: '张',
+                lastName: '三',
+                fullName: ''
+            })
+
+            // 使用计算属性 , 简写形式（没有考虑 计算属性 被修改的时候 ）
+            // person.fullName = computed(() => {
+            //     //  跟vue2一样， 具有回调函数 
+            //     return person.firstName + '-' + person.lastName
+            // })
+
+
+            // 计算属性， 完整写法 （考虑了计算属性被修改的时候 ） 
+            person.fullName = computed({
+                get() {
+                    return person.firstName + '-' + person.lastName
+                },
+                set(value) {
+                    const nameArr = value.split('-')
+                    person.firstName = nameArr[0]
+                    person.lastName = nameArr[1]
+                },
+            })
+            return {   
+                person,
+            }
+        }
+```
+
+
+
+
+
+
+
+### Vue3中的watch 监视属性
+
+监视属性与 vue2 中 watch 配置功能一致 
+
+两个小坑： 
+
+- 监视 reactive 定义的响应式数据时， oldval 无法正确获取、并且强制开启了深度监视 （deep配置无效） 
+- 监视 reactive  定义的响应式数据中的某个数据时 ：  `deep` 配置有效 
+
+
+
+watch 是一个函数，直接调用， 
+
+能有接收三个参数： 1, 需要监视的值， 2,回调函数 3, 监视的配置项 
+
+
+
+**情况一**
+
+```js
+//第一种情况， 监视 ref 定义的单个属性  
+watch(sum, (newVal, oldVal) => {
+    console.log('sum的值变化了', newVal, oldVal)
+})
+```
+
+
+
+**情况二**
+
+```js
+// 第二种情况 监视 多个 ref定义的单个属性 
+watch([sum, age] , (newVal, oldVal) => {
+    console.log('sum, age 都被修改了',newVal, oldVal )
+}, {immediate: true})   // 给watch 添加配置项 immediate 初始时 执行一次配置 
+
+```
+
+
+
+**情况三** ： 不能够监视到reactive定义的响应式数据的变化 
+
+```js
+let person = reactive({
+    name: "Yellowsea",
+    age: 18
+})
+/**
+             * 情况三 ：监视reactive 所定义的一个响应式数据的全部属性 
+             *  1. 注意： 此处无法开启正确的获取 oldValue 
+             *  2. 注意： 强制开启了深度监视 （使用 deep 配置无效）
+             *  */  
+
+watch(person,(newVal, oldVal) => {
+    console.log("person 的值变化了")
+    console.log("newVal为 ", newVal)
+    console.log("oldVal为" , oldVal)
+})
+```
+
+区分不了 `newVal` 和 `oldVal`
+
+<img src="https://gitee.com/yunhai0644/imghub/raw/master/20211109170351.png" alt="image-20211109170345538" style="zoom:67%;" />
+
+
+
+**情况四**  ： 能够监视得到单个数据的变化 
+
+```js
+// 情况四： 监视reactive 所定义的一个响应式数据中的某一个数据 
+watch(() => person.name, (newVal, oldVal)=> {
+    console.log('person中的name 属性的值变化了' , newVal , oldVal)
+})
+```
+
+<img src="https://gitee.com/yunhai0644/imghub/raw/master/20211109170816.png" alt="image-20211109170811541" style="zoom:67%;" />
+
+
+
+**情况五**  : 能够监视得到多个数据的变化 
+
+```js
+// 情况五，监视reactive 所定义的一个响应式数据中的 多个 数据
+watch([() => person.name, ()=> person.age], (newVal, oldVal) => {
+    console.log('person中的name和age 发生了变化 ', newVal, oldVal)
+})
+```
+
+<img src="https://gitee.com/yunhai0644/imghub/raw/master/20211109171329.png" alt="image-20211109171044034" style="zoom: 50%;" />
+
+
+
+**特殊情况** :  不能有监视到  `newVal` 和 `oldVal` 的变化 
+
+```js
+let person = reactive({
+    name: "Yellowsea",
+    age: 18,
+    job: {
+        j1: {
+            data: 'flag'
+        }
+    }
+})
+// 特殊情况 
+// // 这里的 deep:true 是有效的 
+watch(()=> person.job, (newVal, oldVal)=> {
+    console.log('job下的data数据被修改了', newVal, oldVal)
+}, {deep: true})   // 这里的 deep:true 是有效的 
+```
+
+<img src="https://gitee.com/yunhai0644/imghub/raw/master/20211109172139.png" alt="image-20211109172128241" style="zoom:57%;" />
+
+
+
 
 
 
