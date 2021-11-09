@@ -659,3 +659,124 @@ Object.defineProperty(data,'count', {
     
     
 
+###  `reactive `对比 `ref`
+
+
+
+- 从定义数据角度对比： 
+  - `ref`用来定义： **基本类型数据**
+  - `reactive` 用来定义 ： 对象（或数组） 类型数据 
+  - 备注 ：` ref` 也可以用来定义 对象（或数组） 类型数据 ， 它内部会通过 `reactive` 转为代理对象 
+- 从原理角度对比 
+  - `ref` 通过 `Object.defineProperty()` 的 `get` 与 `set` 来实现响应式 （数据劫持 ）（和vue2一样）
+  - `reactive` 通过使用 `Proxy` 来实现响应式（数据劫持），并通过 `Reflect` 操作 源对象 内部的数据 
+- 从使用角度相比
+  - `ref` 定义的数据： 操作数据需要 `.value` ， 读取数据时模板中直接读取不需要`.value` 
+  - `reactive` 定义的数据： 操作数据与读取数据 ： 均不需要 `.value`
+
+
+
+
+
+
+
+### `setup` 的两个注意点
+
+
+
+
+
+**Vue2知识复习**
+
+> 在vue2时候，使用 在组件传递参数 ，在子组件中使用 `props` 接收，可以通过 `this.xxx` 接收到父给子传递的数据 。 但是如果 子组件 不接收 父组件传过来的数据  ， 则数据不会出现在子组件的 `this` 身上， 而是存在了 vc身上的 `$attrs`  中 
+
+> 同样的情况，在vue2中使用插槽时，  子组件没有定义插槽， 而父组件给子组件传递了`<html>`数据 ，则数据不会出现页面上，而是存在了  vc 的`  $slots`  中 
+
+ 
+
+***`setup` 的执行时机 ：*  比 `beforeCreate()` 钩子还早** 
+
+```js
+        beforeCreate() {
+            console.log('---------------beforeCreate-----------------')
+        },
+        setup() { 
+            console.log('--------setup--------' + '此时的this是' + this)
+        }
+```
+
+<img src="https://gitee.com/yunhai0644/imghub/raw/master/20211109153134.png" alt="image-20211109153117511" style="zoom:67%;" />
+
+
+
+
+
+**`setup` 接收到的两个参数**    :   `setup(props, context)`  
+
+- `props` :   
+
+  ```js
+  // 父组件给子组件传递的参数同样使用 props 接收 
+  props: ['msg','hello'],
+  
+      setup(props) {   
+      // setup 接收到的两个参数  props  context 
+      // props : 定义接收数据时使用到的 
+      // context : 
+      console.log(props) 
+  }
+  ```
+
+  <img src="https://gitee.com/yunhai0644/imghub/raw/master/20211109153741.png" alt="image-20211109153738482" style="zoom:50%;" />
+
+> `props` 用于接收上层组件的数据，并且传输的数据也是和vue2一样， 都先使用 `props: []` 接收 ，再传给  `setup` ,   参数得到得是一个`Proxy` **代理数据对象**  
+
+
+
+
+
+- `context` ：  上下文， 本质是一个对象, 普通的Object对象 , 里面有着和vue2中一些方法 
+
+  ```js
+  setup(props,context) {   
+      console.log(context) 
+  }
+  ```
+
+   <img src="../../AppData/Roaming/Typora/typora-user-images/image-20211109154411284.png" alt="image-20211109154411284" style="zoom:67%;" />
+
+ 
+
+> context : 上下文的意思，本质是一个对象 ， 身上有着和vue2相同的一些方法，
+>
+>   `attrs()` 用于接收没有定义的 `props` 参数，  
+>
+> `emit()` 用于定义自定义触发事件 
+>
+> `slots()` ： 接收插槽未定义的标签数据 
+
+
+
+**setup两个注意点**
+
+
+
+- `setup` 的执行时机 ：
+  - 在 `beforeCreate` 之前执行一次 ， this是 undefined 
+- `setup` 的参数 
+  - `props` :  值为对象， 包含 ： 组件外部传递过来， 且组件内部生命接收了属性 
+  - `context` :  上下文对象
+    - `attrs ` ： 值为对象， 包含 ： 组件外部传过来， 但没有在 `props` 配置中声明接收的属性， 相当于`this.$attrs` 
+    - `slots` :  收到的插槽内容，相当于 `this.$slots` 
+    - `emit` ： 分发自定义事件的函数， 相当于 `this.$emit`
+
+
+
+
+
+
+
+
+
+
+
