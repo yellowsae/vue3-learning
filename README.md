@@ -998,3 +998,128 @@ watch(()=> person.job, (newVal, oldVal)=> {
 
 
 
+
+
+#### `watchEffect` 函数
+
+- watch的套路是： 既要指明监视的属性，也要指明监视的回调 
+- `watchEffect` 的套路是： 不用指明监视那个属性，在`watchEffect` 函数中用到那个属性，就监视那个属性
+- `watchEffect` 有点像 `computed` : 
+  - 但是 `computed` 注重的计算出来的值 （回调函数的返回值） ， 所以必须要写返回值 
+  - 而 `watchEffect` 更注重的是过程（回调函数的函数体）， 所以不用写返回值 
+
+```js
+setup() {   
+    let sum = ref(0)
+    let person = reactive({
+        name: "Yellowsea",
+        age: 18,
+        job: {
+            j1: {
+                data: 'flag'
+            }
+        }
+    })
+    // watchEffect 函数 
+    // watchEffcet 所指定的回调中用到的数据只要发生了变化， 则直接重新执行回调 
+    watchEffect(() => {
+        // 函数内用到那个属性就 监视那个属性 
+        const x1 = sum.value   // 值 
+        const x2 = person.job.j1.data
+        console.log('watchEffect配置的回调执行了', x1, x2 )
+    })
+}
+```
+
+监视结果 ： 
+
+<img src="../../AppData/Roaming/Typora/typora-user-images/image-20211109203216335.png" alt="image-20211109203216335" style="zoom:67%;" />
+
+
+
+
+
+
+
+
+
+###  Vue3的生命周期
+
+基本和Vue2的生命周期钩子一样， 
+
+**Vue2的生命周期**
+
+
+
+<img src="https://cn.vuejs.org/images/lifecycle.png" alt="vue2" style="zoom: 50%;" />
+
+
+
+**Vue3的生命周期**
+
+<img  src="https://v3.cn.vuejs.org/images/lifecycle.svg" alt="vue3" style="zoom:67%;" />
+
+- Vue3 中可以继续使用Vue2中的生命周期钩子， 但有两个被更名 
+  - `beforeDestroy` 改名为  `beforeUnmount`  (卸载前)
+  - `destroy` 改名为  `unmount`  (卸载)
+
+
+
+- Vue3 也提供了  Composition API (组合式API) 形式的生命周期钩子， 和 Vue2中钩子对应关系如下 ： 
+
+下表包含如何在 [setup ()](https://v3.cn.vuejs.org/guide/composition-api-setup.html) 内部调用生命周期钩子：
+
+> | 选项式 API      | Hook inside `setup` |
+> | --------------- | ------------------- |
+> | `beforeCreate`  |                     |
+> | `created`       |                     |
+> | `beforeMount`   | `onBeforeMount`     |
+> | `mounted`       | `onMounted`         |
+> | `beforeUpdate`  | `onBeforeUpdate`    |
+> | `updated`       | `onUpdated`         |
+> | `beforeUnmount` | `onBeforeUnmount`   |
+> | `unmounted`     | `onUnmounted`       |
+
+使用生命周期钩子 组合式 
+
+```js
+setup() {   
+    let sum = ref(0)
+    // 在组合式API setup 中， 使用vue3的生命周期钩子 
+    // 直接调用, 都具有 回调函数 
+    onBeforeMount(() => {
+        console.log('------onBeforeMount-------')
+    })
+    onMounted (() => {
+        console.log('------onMounted-------')
+    }) 
+    onBeforeUpdate(() => {
+        console.log('------onBeforeUpdate-------')
+    })
+    onUpdated(() => {
+        console.log('------onUpdated-------')
+    })
+    onBeforeUnmount(() => {
+        console.log('------onBeforeUnmount-------')
+    })
+    onUnmounted(() => {
+        console.log('------onUnmounted-------')
+    })
+    return { 
+        sum,
+    }
+},
+```
+
+
+
+查看输出 
+
+<img src="https://gitee.com/yunhai0644/imghub/raw/master/20211109213828.png" alt="image-20211109213822596" style="zoom:67%;" />
+
+
+
+
+
+
+
