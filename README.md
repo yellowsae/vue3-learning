@@ -1204,6 +1204,117 @@ export default {
 
 ### toRef
 
+
+
+代码实现 
+
+在模板中出现的问题 ： person.name、xxx  模板中的数据长，不美观
+
+```vue
+<template>
+    <h3>name: {{person.name}}</h3>
+    <h3>age: {{person.age}}</h3>
+    <h2> 深层次的数据 ： {{person.job.j1.data}}</h2>
+    <button @click="person.name += '~'">名字变化</button>
+    <button @click="person.age++">age++</button>
+    <button @click="person.job.j1.data += '!'">添加 ！ </button>
+</template>
+```
+
+
+
+为什么需要用toRef()
+
+因为需要简写时，如果返回出响应式的数据时， 必须要使用 toRef() 
+
+直接返回简写的 name : 例如 `const name = person.name `// 得到的name是一个字符串，不具有响应式 
+
+而使用了 toRef()后， 例如 `const name = toRef(person, 'name') `// 得到的时 ObjectRefImpl，具有响应式
+
+ 
+
+
+
+
+
+
+
+
+
+// 解决办法 :  使用 `toRef` 将对象中的数据转为 RefImpl 对象， 可以简写 `person.name` 的写法
+
+​    
+
+```js
+// 使用 toRef() 
+const name = toRef(person, 'name')  
+// toRef() 接收的两个参数，1, 需要简写的对象， 2，需要简写的对象属性 
+console.log(name)      // ObjectRefImpl 
+console.log(person.name)  // str
+```
+
+// 查看`toRef()` 类型，返回的是 `ObjectRefImpl` ，在模板中使用 自动读取 value 
+
+<img src="https://gitee.com/yunhai0644/imghub/raw/master/20211110142328.png" alt="image-20211110142316740" style="zoom:67%;" />
+
+
+
+// `toRefs()` 可以实现 `toRef() `的简写，只有一个传入对象的参数 
+
+```js
+const p = toRefs(person)
+console.log(p)
+```
+
+ <img src="https://gitee.com/yunhai0644/imghub/raw/master/20211110142518.png" alt="image-20211110142507309" style="zoom:67%;" />
+
+
+
+ // 在代码中使用 `toRefs()`  和 `toRef()`
+
+```js
+// 引入 
+import {reactive,toRef,toRefs} from 'vue'
+// 使用toRef()实现模板数据简写
+        setup() {   
+            let person = reactive({
+                name: "Yellowsea",
+                age: 18,
+                job: {
+                    j1: {
+                        data: 'flag'
+                    }
+                }
+            })
+            return { 
+                person,
+                // 直接写到返回值中
+                name: toRef(person, 'name'),
+                age: toRef(person, 'age'),
+                data: toRef(person.job.j1, 'data')
+                
+                // 使用 toRefs() 
+                ...toRefs(person) 
+            }
+        }
+```
+
+
+
+// 最后的结果都是响应式的 
+
+<img src="https://gitee.com/yunhai0644/imghub/raw/master/20211110142752.png" alt="image-20211110142748093" style="zoom:67%;" />
+
+
+
+
+
+
+
+
+
+**//小结** 
+
 - 作用 : 创建一个 ref 对象 ，其value 值指向另一个对象中的某个属性
 - 语法： `const name = toRef(person, 'name')  ` 
 - 应用 ： 要将响应式对象中的某个属性单独提供给外部使用时 
@@ -1211,5 +1322,9 @@ export default {
 
 
 
-代码实现 ： 
+
+
+
+
+
 
