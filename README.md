@@ -1123,3 +1123,93 @@ setup() {
 
 
 
+
+
+
+
+
+
+
+
+### 自定义 hook 函数
+
+- 什么是 hook ?  —— 本质是一个函数， 把setup 函数中使用的 Composition API 进行了封装 
+- 类似于 Vue2中的 mixin 
+- 自定义hook 的优势 ： 复用代码， 让 setup 中的逻辑更清除易懂  
+
+
+
+代码实现 ： 
+
+// 在vue3中创建 `src/hooks/userxxx.js` 
+
+```js
+// 引入模块 
+import { reactive, onMounted, onBeforeUnmount } from 'vue'
+export default function() {
+    // 是一个函数 
+    let points = reactive({
+        x: 0,
+        y: 0
+    })
+	// ... 写逻辑部分
+    return points
+}
+```
+
+// 在组件中实现复用 
+
+`Demo.vue`
+
+```js
+// 引入复用的函数 
+import userPoint from '../hooks/userPoint'   // 是一个函数 
+export default {
+    name: 'Demo',
+    setup() {   
+        let sum = ref(0)
+        // 使用 调用引入的函数 
+        let points = userPoint()
+        // 将获取的坐标写到  hooks 中
+        return { 
+            sum,
+            points
+        }
+    },
+}
+```
+
+`Test.vue`
+
+```js
+import userPoint from '../hooks/userPoint'   // 是一个函数 
+export default {
+    name: 'Test',
+    setup() {
+        // 实现组合式API复用 
+        // 调用引入的函数 
+        let points = userPoint()
+        return {
+            points
+        }
+    }
+}
+```
+
+
+
+
+
+
+
+### toRef
+
+- 作用 : 创建一个 ref 对象 ，其value 值指向另一个对象中的某个属性
+- 语法： `const name = toRef(person, 'name')  ` 
+- 应用 ： 要将响应式对象中的某个属性单独提供给外部使用时 
+- 扩展 ： `toRefs` 与 `toRef` 的功能一致，但可以批量创建多个 ref 对象， 语法 ： `toRefs(person)`
+
+
+
+代码实现 ： 
+
