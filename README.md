@@ -1371,7 +1371,33 @@ import {reactive,toRef,toRefs} from 'vue'
 
 
 
+### readonly 和 shallowReadonly
 
+readonly() 只读   深度 的只读 
+
+shallowReadonly 浅层次的只读
+
+-  readonly()  让一个响应式数据变为只读的  （深度 的只读 ）
+- shallowReadonly : 让一个响应式数据变为只读的 （ 浅层次的只读）
+- 应用场景 ：不希望数据被修改时 
+
+```js
+// 使用 readonly 和 shallowReadonly 
+// readonly() 只读 深度的只读 
+// shallowReadonly  浅层次的只读 
+let sum = readonly(0)  // 使用 readonly 后不能修改 sum 的数据 
+let person = reactive({   
+    name: "Yellowsea",
+    age: 18,
+    job: {
+        j1: {
+            data: 'flag'
+        }
+    }
+})
+// 使用shallowReadonly 后不能该对象的第一层数据，深层的数据可以修改 
+person = shallowReadonly(person)
+```
 
 
 

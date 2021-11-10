@@ -9,7 +9,7 @@
     <button @click="job.j1.data += '!'">添加 ！ </button>
 </template>
 <script>
-    import {reactive,ref,toRefs, readonly,shallowReadonly} from 'vue'
+    import {reactive,onMounted,toRefs, readonly,shallowReadonly} from 'vue'
     export default {
         name: 'Demo',
         setup() {   
@@ -29,7 +29,9 @@
             })
              // 使用shallowReadonly 后不能该对象的第一层数据，深层的数据可以修改 
             person = shallowReadonly(person)
-            console.log(person)
+            onMounted(() => {
+                console.log(person)
+            })
             return { 
                 sum,
                 ...toRefs(person)
