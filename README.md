@@ -1401,3 +1401,55 @@ person = shallowReadonly(person)
 
 
 
+### toRaw 和 markRaw
+
+- toRaw : 
+  - 作用 ： 将一个由 `reactive` 生成的响应式对象 转为 普通对象 
+  - 使用场景 ： 用于读取响应式对象对应的普通对象，对这个普通对象的所有操作， 不会引起页面更新
+- markRaw :
+  - 作用 ： 标记一个对象， 使其永远不会变为响应式对象 
+  - 使用场景 ： 
+    1. 有些值不应该被设为响应式， 例如 复杂的第三方库等
+    2. 当渲染具有不可变数据源的大列表时， 跳过响应式转换可以提高性能 
+
+```js
+setup() {   
+    let sum = ref(0)  
+    let person = reactive({   
+        name: "Yellowsea",
+        age: 18,
+        job: {
+            j1: {
+                data: 'flag'
+            }
+        },
+    })
+    // toRaw() 只能处理 reactive 处理的响应式 
+    function showRawPerson() {
+        // console.log(person)  // proxy 
+        const p = toRaw(person)  // 使用 toRow() 将响应式对象变为原始的 OBJ对象 
+        // 如果处理的是ref 定义的数据 ,不会对 ref 定义的数据类型修改
+        const x = toRaw(sum)  // RefImpl  
+        }
+    function addCar () {
+        let car = {name: '奔驰', price: 40}  
+        person.car = car  // 添加的车的信息数据是响应式的 
+        // 使用 markRaw()， 让响应式的对象变为 普通的对象 
+        person.car  = markRaw(car)
+    }
+    return { 
+        sum,
+        addCar,
+        person,
+        showRawPerson,
+        ...toRefs(person)
+    }
+}
+```
+
+
+
+
+
+
+
