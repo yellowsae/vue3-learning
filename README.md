@@ -1622,17 +1622,20 @@ Composition API  和 Opt
 
 
 
-### Teleport 
+### Teleport
+
+
 
 - 什么是 `Teleport`  —— 是一种能够将我们的组件 HTML 结构移动到指定的位置 
 
+  // 使用`teleport`
+  
   ```vue
-  <teleport to='移动的位置'>
+  <teleport to='body'>  
+      <!--  to='body' : 需要移动到的位置-->
   	<div v-if='isShow' class='mask'>
           <div class='dialog'>
-              <h3>
-                  我是一个弹窗
-              </h3>
+              <h3>我是一个弹窗</h3>
               <button @click='isShow = false'>关闭弹窗</button>
           </div>
       </div>
@@ -1643,14 +1646,85 @@ Composition API  和 Opt
 
 
 
-### Suspense 
+
+
+### Suspense
+
+为什么需要异步引入组件 :  因为开发过程中如果 App 使用了静态引入组件， 而组件实现的内容过于庞大，导致页面渲染很慢， 所以使用了 异步引入组件， （那个组件加载好了，就在页面中展示 ） ，所以在开发中都会使用异步引入组件 
+
+
+
+// 使用vue内置的 `defineAsyncComponent` Api    
+
+```js
+// import Chlid from './components/Chlid.vue'  // 静态引入组件 
+import {defineAsyncComponent} from 'vue'   // defineAsyncComponent 引入动态组件API 
+const Chlid = defineAsyncComponent(() => import('./components/Chlid'))   // 动态引入组件 
+// 出现的情况 ： 当网速慢时候，先出现 APP组件，然后再出现 Chlid
+```
+
+
+
+为什么使用 Suspense   :  当开发过程时， 浏览网页，网速过慢时， 为了让用户更好的体验，可以展示提示的内容 
+
+// 使用 `Suspense`  标签
+
+需要注意 ：内置的两个插槽 `default`  `fallbakc`
+
+```vue
+    <Suspense>
+      <!--  内置了两个插槽  --> 
+      <!-- 1. 是 define 的， 默认的 ， 展示你要展示的内容 
+          2. 是当组件在 加载时候， 要展示的提示内容  -->
+          <!-- 需要使用v-slot 指明放入那个插槽中 default 默认展示的   fallback 正在加载的 
+              default 和 fallback 不允许修改 ，官方定义的-->
+          <template v-slot:default>  
+            <Chlid />
+          </template>
+          <template v-slot:fallback>
+            <h2>正在加载中 ..........</h2>
+          </template>
+    </Suspense>
+```
+
+
 
 - 等待异步组件时渲染一些额外内容， 让应用有更好的用户的体验
 
 - 使用步骤 ：
 
-  ```js
-  ```
+  1. 引入： 
+
+     ```js
+     import {defineAsyncComponent} from 'vue'    
+     const Chlid = defineAsyncComponent(() => import('./components/Chlid')) 
+     ```
+
+  2. 使用 `Suspense` 包裹组件，并配置好 `default` 和 `fallback`
+
+     ```vue
+     <template>
+       <div class="app">
+         <h2>我是App 组件</h2>
+         <Suspense>
+           <!--  内置了两个插槽  --> 
+           <!-- 1. 是 define 的， 默认的 ， 展示你要展示的内容 
+               2. 是当组件在 加载时候， 要展示的提示内容  -->
+     
+               <!-- 需要使用v-slot 指明放入那个插槽中 default 默认展示的   fallback 正在加载的 
+                   default 和 fallback 不允许修改 ，官方定义的-->
+               <template v-slot:default>  
+                 <Chlid />
+               </template>
+               <template v-slot:fallback>
+                 <h2>正在加载中 ..........</h2>
+               </template>
+         </Suspense>
+       </div>
+     </template>
+     ```
+
+     
 
   
 
