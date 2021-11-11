@@ -1512,3 +1512,53 @@ setup() {
 
 
 
+
+
+
+
+###  provide 和 inject
+
+`provide` 和 `inject `能够实现组代组件 和 **它的后代组件** (所有后代) 传输数据  ， 一般用于祖孙之间， 父子之间的传递数据方法还是使用 `props` 方法比较合理 
+
+
+
+接收到的数据也是 `Proxy` 代理对象类型的 
+
+<img src="https://gitee.com/yunhai0644/imghub/raw/master/20211111162625.png" alt="image-20211111162616164" style="zoom: 67%;" />
+
+
+
+- 作用 ： 实现 <strong style="color: orange; font-size: 20px ">祖孙组件间的通信</strong>  
+
+- 实现原理 ： 父组件中有一个 `provide` 选项来提供数据 ，子组件中有一个 `inject` 选项来接收数据 
+
+- 具体写法 ：
+
+  1. 祖组件中 
+
+     ```js
+     import {toRefs, reactive, provide} from 'vue'
+     setup() {
+         let cat = reactive({name : '奔驰',price: '40W'})
+         // provide 的使用方法
+         provide('cat', cat)  // 接收连个参数， 一个是定义的名字，和需要传递的参数 
+         return {
+             ...toRefs(cat)
+         }
+     }
+     ```
+
+  2. 后代组件中
+
+     ```js
+     // inject 使用 inject 接收祖代传递的数据 
+     import {inject,toRefs} from 'vue'
+     setup() {
+         // 使用方法 inject('cat') ，接收组代 provide() 定义的数据 
+         let cat = inject('cat') 
+         return {...toRefs(cat)}
+     }
+     ```
+
+
+
