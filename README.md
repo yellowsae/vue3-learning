@@ -1590,3 +1590,69 @@ console.log(isProxy(cat)) // true
 
 
 
+## 组合式API 的优势
+
+
+
+Composition API  和 Opt
+
+
+
+
+
+
+
+## 新增的组件
+
+
+
+### Fragment 
+
+- 在 Vue2中 ： 组件必须要有一个根标签 
+- 在Vue3中 ： 组件可以没有根标签， 内部会将多个标签包含在一个`Fragment` 虚拟元素中 
+- 好处 ： 减少标签层级，减少内存占用 
+
+
+
+<img src="https://gitee.com/yunhai0644/imghub/raw/master/20211111204132.png" alt="image-20211111204123497" style="zoom: 50%;" />
+
+
+
+
+
+
+
+### Teleport 
+
+- 什么是 `Teleport`  —— 是一种能够将我们的组件 HTML 结构移动到指定的位置 
+
+  ```vue
+  <teleport to='移动的位置'>
+  	<div v-if='isShow' class='mask'>
+          <div class='dialog'>
+              <h3>
+                  我是一个弹窗
+              </h3>
+              <button @click='isShow = false'>关闭弹窗</button>
+          </div>
+      </div>
+  </teleport>
+  ```
+
+
+
+
+
+### Suspense 
+
+- 等待异步组件时渲染一些额外内容， 让应用有更好的用户的体验
+
+- 使用步骤 ：
+
+  ```js
+  ```
+
+  
+
+
+
