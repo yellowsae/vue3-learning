@@ -1795,5 +1795,5 @@ const Chlid = defineAsyncComponent(() => import('./components/Chlid'))   // 动�
 
 - 移除了 `filter` 过滤器 
 
-  > 移除过滤器的原因 ： 
+  > 移除过滤器的原因 ： 过滤器虽然这看起来很方便，但它需要一个自定义语法，打破大括号内表达式是 “只是 JavaScript” 的假设，这不仅有学习成本，而且有实现成本！建议用方法调用或计算属性去替换过滤器。 
 
