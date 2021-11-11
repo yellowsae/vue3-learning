@@ -1726,7 +1726,74 @@ const Chlid = defineAsyncComponent(() => import('./components/Chlid'))   // 动�
 
      
 
+
+
+
+
+
+
+
+## 其他
+
+
+
+### 全局配置API 的转移 
+
+- vue2 有许多加载 VM 中的全局API 和 配置 
+
+  ```js
+  // 注册全局组件 
+  Vue.component('MyButton', {})
+  
+  //注册全局 指令 
+  Vue.directive('focus',{}) 
+  ```
+
+- vue3对这些API做出了调整 
+
+  将全局API， 即 ： `Vue.xxx` 调整到应用的实例上 `app` 
+
+  > | vue2全局API(`Vue`)       | vue3实例API`app`            |
+  > | :----------------------- | --------------------------- |
+  > | Vue.config.xxx           | app.config.xxx              |
+  > | Vue.config.productionTip | 移除                        |
+  > | Vue.component            | app.component               |
+  > | Vue.directive            | app.directive               |
+  > | Vue.mixin                | app.mixin                   |
+  > | Vue.use                  | app.use                     |
+  > | Vue.prototype            | app.config.globalProperties |
+
   
 
 
+
+
+
+### 其他改变 
+
+- data 选项应该始终被生命为一个函数 
+
+- 过度类名的更改 
+
+  `.v-enter`  改为  `.v-enter-from`
+
+- 移除了 `keyCode` 作为 v-on 的修饰符 ，同时也不再支持 `config.keyCodes` 
+
+- 移除了 `v-on.native` 修饰符  （@click.native表明使用的是原始的click）
+
+  ```html
+  // 父组件中绑定
+  <my-component @close='hanldNativeClose' @click='handlNativeClick' />
+  ```
+
+  ```js
+  // 子组件中使用 
+  emits: ['close', 'click' ]
+  ```
+
+  
+
+- 移除了 `filter` 过滤器 
+
+  > 移除过滤器的原因 ： 
 
