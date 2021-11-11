@@ -1562,3 +1562,31 @@ setup() {
 
 
 
+### 对响应式数据进行判断 
+
+- isRef : 检查一个值是否为一个 ref 对象 
+- isReactive :  检查一个值是否由 `reactive` 创建的响应式对象
+- isReadonly : 检查一个对象是否由 `readonly` 创建的只读代理 
+- isProxy : 检查一个对象是否由 `reactive` 或者 `readonly` 方法创建的代理 
+
+
+
+// 需要使用时， 都要进行引入 
+
+```js
+let cat = reactive({name : '奔驰',price: '40W'})
+let sum = ref(0)
+let cat2 = ref({name : '奔驰',price: '40W'})
+let test = readonly(cat)
+
+console.log(isRef(sum))  //true 
+console.log(isReactive(cat))  // true
+console.log(isReadonly(test)) // true
+console.log(isProxy(cat2))  // false 
+console.log(isProxy(cat)) // true
+```
+
+
+
+
+
